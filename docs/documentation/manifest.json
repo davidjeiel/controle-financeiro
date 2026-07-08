@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-07-08T14:01:28.951Z",
+  "source": "doc-as-code",
+  "pages": [
+    {
+      "title": "Finanças Pessoais",
+      "output": "visao-geral.html",
+      "source": "README.md"
+    },
+    {
+      "title": "Arquitetura",
+      "output": "arquitetura.html",
+      "source": "docs-src/arquitetura.md"
+    },
+    {
+      "title": "Pipeline de documentacao",
+      "output": "pipeline.html",
+      "source": "docs-src/pipeline.md"
+    }
+  ]
+}

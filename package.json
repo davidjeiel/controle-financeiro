@@ -28,6 +28,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "docs:build": "node scripts/generate-docs.js",
+    "pages:build": "npm run build && npm run docs:build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

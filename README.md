@@ -57,6 +57,22 @@ npm run dev
 
 9. Abra o navegador e acesse `http://localhost:3000` para visualizar o projeto Finanças em execução localmente.
 
+## Documentacao doc-as-code
+
+A documentacao tecnica do projeto fica versionada em Markdown e e gerada automaticamente pela pipeline do GitHub Actions.
+
+- Conteudo fonte: `README.md` e arquivos em `docs-src/`
+- Script gerador: `scripts/generate-docs.js`
+- Saida publicada: `docs/documentation/`
+
+Para gerar a documentacao localmente:
+
+```shell
+npm run docs:build
+```
+
+No GitHub Pages, a demo continua na raiz do site e a documentacao fica disponivel em `/documentation/`.
+
 ## Contribuição
 
 Se você deseja contribuir para o projeto Finanças, siga as etapas abaixo:

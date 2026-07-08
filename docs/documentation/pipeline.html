@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pipeline de documentacao - Documentacao</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #d7dde5;
+      --accent: #0f766e;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 18px 24px;
+    }
+    .brand {
+      display: grid;
+      gap: 2px;
+      font-weight: 700;
+    }
+    .brand small {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .demo-link {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 32px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    nav {
+      align-self: start;
+      position: sticky;
+      top: 24px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    nav strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    nav a {
+      display: block;
+      padding: 8px 0;
+      color: var(--text);
+      text-decoration: none;
+      border-top: 1px solid #edf0f3;
+    }
+    nav a:first-of-type { border-top: 0; }
+    main {
+      min-width: 0;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 36px;
+    }
+    h1, h2, h3, h4 {
+      line-height: 1.22;
+      margin: 1.35em 0 .55em;
+    }
+    h1 { margin-top: 0; font-size: clamp(2rem, 4vw, 3rem); }
+    h2 { border-top: 1px solid #edf0f3; padding-top: 1em; }
+    a { color: var(--accent); }
+    code {
+      background: #eef2f6;
+      border-radius: 5px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.92em;
+    }
+    pre {
+      overflow-x: auto;
+      background: var(--code);
+      color: #f9fafb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    footer {
+      color: var(--muted);
+      font-size: .92rem;
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #edf0f3;
+    }
+    @media (max-width: 820px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .layout { grid-template-columns: 1fr; padding: 20px 16px; }
+      nav { position: static; }
+      main { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <span>Financas Pessoais</span>
+        <small>Documentacao gerada por doc-as-code</small>
+      </div>
+      <a class="demo-link" href="../index.html">Abrir demo</a>
+    </div>
+  </header>
+  <div class="layout">
+    <nav>
+      <strong>Documentos</strong>
+      <a href="visao-geral.html">Finanças Pessoais</a>
+<a href="arquitetura.html">Arquitetura</a>
+<a href="pipeline.html">Pipeline de documentacao</a>
+    </nav>
+    <main>
+      <h1 id="pipeline-de-documentacao">Pipeline de documentacao</h1>
+<p>A pipeline <code>.github/workflows/pages-docs.yml</code> automatiza a publicacao da demo e da documentacao.</p>
+<h2 id="gatilhos">Gatilhos</h2>
+<ul>
+<li><code>push</code> na branch <code>main</code>.</li>
+<li><code>workflow_dispatch</code> para execucao manual.</li>
+</ul>
+<h2 id="etapas">Etapas</h2>
+<ul>
+<li>Baixa o repositorio.</li>
+<li>Configura Node.js.</li>
+<li>Instala dependencias com <code>npm ci</code>.</li>
+<li>Gera o build da aplicacao React.</li>
+<li>Copia o build para <code>docs/</code>.</li>
+<li>Executa <code>npm run docs:build</code>.</li>
+<li>Publica o diretorio <code>docs/</code> no GitHub Pages.</li>
+</ul>
+<h2 id="como-gerar-localmente">Como gerar localmente</h2>
+<pre><code>
+npm run docs:build
+</code></pre>
+<p>Depois da execucao, abra <code>docs/documentation/index.html</code> para validar a documentacao.</p>
+<h2 id="url-esperada">URL esperada</h2>
+<ul>
+<li>Demo da ferramenta: raiz do GitHub Pages.</li>
+<li>Documentacao: <code>/documentation/</code>.</li>
+</ul>
+      <footer>Gerado automaticamente em 08/07/2026, 11:01.</footer>
+    </main>
+  </div>
+</body>
+</html>
