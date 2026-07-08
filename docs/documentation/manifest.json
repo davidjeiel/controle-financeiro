@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-07-08T21:56:10.727Z",
+  "source": "doc-as-code-diataxis",
+  "categories": [
+    {
+      "key": "tutorials",
+      "label": "Tutorials"
+    },
+    {
+      "key": "how-to",
+      "label": "How-to"
+    },
+    {
+      "key": "reference",
+      "label": "Reference"
+    },
+    {
+      "key": "explanation",
+      "label": "Explanation"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Criando primeira API",
+      "output": "tutorials/criando-primeira-api.html",
+      "category": "tutorials",
+      "source": "docs/tutorials/criando-primeira-api.md"
+    },
+    {
+      "title": "Executando projeto localmente",
+      "output": "tutorials/executando-projeto-localmente.html",
+      "category": "tutorials",
+      "source": "docs/tutorials/executando-projeto-localmente.md"
+    },
+    {
+      "title": "Configurar OAuth2",
+      "output": "how-to/configurar-oauth2.html",
+      "category": "how-to",
+      "source": "docs/how-to/configurar-oauth2.md"
+    },
+    {
+      "title": "Publicar no gateway",
+      "output": "how-to/publicar-no-gateway.html",
+      "category": "how-to",
+      "source": "docs/how-to/publicar-no-gateway.md"
+    },
+    {
+      "title": "Tratar erros recorrentes",
+      "output": "how-to/tratar-erros-recorrentes.html",
+      "category": "how-to",
+      "source": "docs/how-to/tratar-erros-recorrentes.md"
+    },
+    {
+      "title": "Codigos erro",
+      "output": "reference/codigos-erro.html",
+      "category": "reference",
+      "source": "docs/reference/codigos-erro.md"
+    },
+    {
+      "title": "Endpoints",
+      "output": "reference/endpoints.html",
+      "category": "reference",
+      "source": "docs/reference/endpoints.md"
+    },
+    {
+      "title": "Modelo dados",
+      "output": "reference/modelo-dados.html",
+      "category": "reference",
+      "source": "docs/reference/modelo-dados.md"
+    },
+    {
+      "title": "Variaveis ambiente",
+      "output": "reference/variaveis-ambiente.html",
+      "category": "reference",
+      "source": "docs/reference/variaveis-ambiente.md"
+    },
+    {
+      "title": "Arquitetura",
+      "output": "explanation/arquitetura.html",
+      "category": "explanation",
+      "source": "docs/explanation/arquitetura.md"
+    },
+    {
+      "title": "Decisoes tecnicas",
+      "output": "explanation/decisoes-tecnicas.html",
+      "category": "explanation",
+      "source": "docs/explanation/decisoes-tecnicas.md"
+    },
+    {
+      "title": "Governanca APIs",
+      "output": "explanation/governanca-apis.html",
+      "category": "explanation",
+      "source": "docs/explanation/governanca-apis.md"
+    },
+    {
+      "title": "Padrao Strangler Fig",
+      "output": "explanation/padrao-strangler-fig.html",
+      "category": "explanation",
+      "source": "docs/explanation/padrao-strangler-fig.md"
+    }
+  ]
+}

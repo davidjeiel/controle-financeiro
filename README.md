@@ -63,7 +63,7 @@ A documentacao tecnica do projeto fica versionada em Markdown, organizada pelo f
 
 - Conteudo fonte: arquivos em `docs/tutorials`, `docs/how-to`, `docs/reference` e `docs/explanation`
 - Script gerador: `scripts/generate-docs.js`
-- Saida gerada localmente: `site/documentation/`
+- Saida gerada: `docs/documentation/`
 
 Para gerar a documentacao localmente:
 

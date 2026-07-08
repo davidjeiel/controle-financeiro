@@ -28,7 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "docs:build": "node scripts/generate-docs.js --source docs --output site/documentation",
+    "docs:build": "node scripts/generate-docs.js --source docs --output docs/documentation",
     "pages:build": "npm run build && node scripts/prepare-pages.js && npm run docs:build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
