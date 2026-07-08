@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T22:04:48.563Z",
+  "generatedAt": "2026-07-08T22:13:48.471Z",
   "source": "doc-as-code-diataxis",
   "categories": [
     {
@@ -115,12 +115,6 @@
       "output": "explanation/governanca-apis.html",
       "category": "explanation",
       "source": "docs/explanation/governanca-apis.md"
-    },
-    {
-      "title": "Padrao Strangler Fig",
-      "output": "explanation/padrao-strangler-fig.html",
-      "category": "explanation",
-      "source": "docs/explanation/padrao-strangler-fig.md"
     }
   ]
 }
