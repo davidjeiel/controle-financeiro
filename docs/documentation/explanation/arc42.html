@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Configurar OAuth2 - Documentacao</title>
+  <title>Arc42 - Documentacao</title>
   <style>
     :root {
       color-scheme: light;
@@ -206,9 +206,9 @@
 <a href="../tutorials/criando-primeira-api.html">Criando primeira API</a>
 <a href="../tutorials/executando-projeto-localmente.html">Executando projeto localmente</a>
 <strong>How-to</strong>
-<a aria-current="page" href="configurar-oauth2.html">Configurar OAuth2</a>
-<a href="publicar-no-gateway.html">Publicar no gateway</a>
-<a href="tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
+<a href="../how-to/configurar-oauth2.html">Configurar OAuth2</a>
+<a href="../how-to/publicar-no-gateway.html">Publicar no gateway</a>
+<a href="../how-to/tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
 <strong>Reference</strong>
 <a href="../reference/changelog.html">Changelog</a>
 <a href="../reference/codigos-erro.html">Codigos erro</a>
@@ -216,30 +216,106 @@
 <a href="../reference/modelo-dados.html">Modelo dados</a>
 <a href="../reference/variaveis-ambiente.html">Variaveis ambiente</a>
 <strong>Explanation</strong>
-<a href="../explanation/adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
-<a href="../explanation/arc42.html">Arc42</a>
-<a href="../explanation/arquitetura.html">Arquitetura</a>
-<a href="../explanation/c4-componentes.html">Diagramas C4 componentes</a>
-<a href="../explanation/decisoes-tecnicas.html">Decisoes tecnicas</a>
-<a href="../explanation/governanca-apis.html">Governanca APIs</a>
-<a href="../explanation/padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
+<a href="adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
+<a aria-current="page" href="arc42.html">Arc42</a>
+<a href="arquitetura.html">Arquitetura</a>
+<a href="c4-componentes.html">Diagramas C4 componentes</a>
+<a href="decisoes-tecnicas.html">Decisoes tecnicas</a>
+<a href="governanca-apis.html">Governanca APIs</a>
+<a href="padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
     <main>
-      <h1 id="configurar-oauth2">Configurar OAuth2</h1>
-<p>Use este guia quando a aplicacao precisar autenticar chamadas em APIs protegidas por OAuth2.</p>
-<h2 id="procedimento">Procedimento</h2>
+      <h1 id="arc42">Arc42</h1>
+<p>Este documento usa o template Arc42 para registrar a arquitetura do sistema de controle financeiro em uma estrutura padronizada.</p>
+<h2 id="1-introducao-e-objetivos">1. Introducao e objetivos</h2>
+<p>O sistema apoia o controle financeiro pessoal por meio de uma interface web simples para registro, listagem e acompanhamento de receitas, despesas e saldo.</p>
+<p>Objetivos principais:</p>
 <ul>
-<li>Cadastre a aplicacao no provedor de identidade.</li>
-<li>Configure <code>client_id</code>, <code>client_secret</code>, escopos e URL de callback.</li>
-<li>Armazene segredos em variaveis protegidas do ambiente.</li>
-<li>Valide a obtencao do token antes de chamar APIs internas.</li>
+<li>Permitir registro rapido de transacoes financeiras.</li>
+<li>Apresentar resumo financeiro de forma clara.</li>
+<li>Manter uma demo navegavel publicada no GitHub Pages.</li>
+<li>Evoluir documentacao tecnica como codigo, junto com o repositorio.</li>
 </ul>
-<h2 id="checklist">Checklist</h2>
+<h2 id="2-restricoes">2. Restricoes</h2>
 <ul>
-<li>Credenciais fora do codigo-fonte.</li>
-<li>Escopos limitados ao necessario.</li>
-<li>Renovacao de token documentada.</li>
-<li>Erros de autenticacao registrados em log.</li>
+<li>A aplicacao atual e um frontend React publicado como site estatico.</li>
+<li>A publicacao usa GitHub Pages.</li>
+<li>A documentacao deve permanecer versionada em Markdown.</li>
+<li>Segredos e configuracoes sensiveis nao devem ser versionados.</li>
 </ul>
+<h2 id="3-contexto-e-escopo">3. Contexto e escopo</h2>
+<p>O sistema e usado por uma pessoa que deseja registrar transacoes e acompanhar seu saldo. No escopo atual, a aplicacao roda no navegador e nao depende de backend obrigatorio para a demo publicada.</p>
+<h2 id="4-estrategia-de-solucao">4. Estrategia de solucao</h2>
+<p>A solucao separa a experiencia principal em componentes React e a documentacao em arquivos Markdown organizados por Diataxis.</p>
+<ul>
+<li>Demo: publicada na raiz de <code>docs/</code>.</li>
+<li>Documentacao: publicada em <code>docs/documentation/</code>.</li>
+<li>Fonte da documentacao: arquivos Markdown em <code>docs/tutorials</code>, <code>docs/how-to</code>, <code>docs/reference</code> e <code>docs/explanation</code>.</li>
+</ul>
+<h2 id="5-visao-de-blocos">5. Visao de blocos</h2>
+<div class="mermaid">flowchart TB
+  User[&quot;Usuario&quot;] --&gt; Browser[&quot;Navegador&quot;]
+  Browser --&gt; App[&quot;Aplicacao React&quot;]
+  App --&gt; Components[&quot;Componentes de UI&quot;]
+  Components --&gt; Storage[&quot;Estado local e dados do navegador&quot;]
+  App --&gt; Export[&quot;Exportacao de dados&quot;]</div>
+<h2 id="6-visao-de-runtime">6. Visao de runtime</h2>
+<div class="mermaid">sequenceDiagram
+  actor Usuario
+  participant UI as Interface React
+  participant Form as Formulario
+  participant Grid as Grade de transacoes
+  participant Resume as Resumo financeiro
+
+  Usuario-&gt;&gt;UI: Abre a demo
+  Usuario-&gt;&gt;Form: Informa transacao
+  Form-&gt;&gt;UI: Envia dados validados
+  UI-&gt;&gt;Grid: Atualiza lista
+  UI-&gt;&gt;Resume: Recalcula totais
+  Resume--&gt;&gt;Usuario: Exibe saldo atualizado</div>
+<h2 id="7-visao-de-implantacao">7. Visao de implantacao</h2>
+<div class="mermaid">flowchart LR
+  Repo[&quot;Repositorio GitHub&quot;] --&gt; Actions[&quot;GitHub Actions&quot;]
+  Actions --&gt; Build[&quot;Build React&quot;]
+  Actions --&gt; Docs[&quot;Gerador doc-as-code&quot;]
+  Build --&gt; PagesFolder[&quot;docs/&quot;]
+  Docs --&gt; DocsFolder[&quot;docs/documentation/&quot;]
+  PagesFolder --&gt; Pages[&quot;GitHub Pages&quot;]
+  DocsFolder --&gt; Pages</div>
+<h2 id="8-conceitos-transversais">8. Conceitos transversais</h2>
+<ul>
+<li>Documentacao como codigo.</li>
+<li>Componentizacao da interface.</li>
+<li>Publicacao estatica.</li>
+<li>Organizacao Diataxis para separar tipos de conhecimento.</li>
+</ul>
+<h2 id="9-decisoes-arquiteturais">9. Decisoes arquiteturais</h2>
+<p>As decisoes relevantes ficam registradas em ADRs dentro da documentacao.</p>
+<h2 id="10-qualidade">10. Qualidade</h2>
+<table>
+<thead>
+<tr><th>Atributo</th><th>Abordagem</th></tr>
+</thead><tbody>
+<tr><td>Manutenibilidade</td><td>Componentes React e documentacao versionada.</td></tr>
+<tr><td>Portabilidade</td><td>Site estatico publicavel em GitHub Pages.</td></tr>
+<tr><td>Rastreabilidade</td><td>Historico Git para codigo e documentacao.</td></tr>
+<tr><td>Usabilidade</td><td>Interface direta para registro e consulta financeira.</td></tr>
+</tbody></table>
+<h2 id="11-riscos">11. Riscos</h2>
+<ul>
+<li>Divergencia entre a demo publicada e o codigo-fonte.</li>
+<li>Documentacao gerada ficar desatualizada se a pipeline falhar.</li>
+<li>Crescimento de regras financeiras sem testes automatizados suficientes.</li>
+</ul>
+<h2 id="12-glossario">12. Glossario</h2>
+<table>
+<thead>
+<tr><th>Termo</th><th>Definicao</th></tr>
+</thead><tbody>
+<tr><td>Demo</td><td>Versao estatica publicada para visualizacao da ferramenta.</td></tr>
+<tr><td>Diataxis</td><td>Framework para organizar documentacao em tutorials, how-to, reference e explanation.</td></tr>
+<tr><td>ADR</td><td>Registro de decisao arquitetural.</td></tr>
+<tr><td>Arc42</td><td>Template para documentar arquitetura de software.</td></tr>
+</tbody></table>
       <footer>Gerado automaticamente em 08/07/2026, 19:04.</footer>
     </main>
   </div>

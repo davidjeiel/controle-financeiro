@@ -138,6 +138,14 @@
       vertical-align: top;
     }
     th { background: #f1f5f9; }
+    .mermaid {
+      overflow-x: auto;
+      margin: 24px 0;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
     .diataxis-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -175,6 +183,10 @@
       .diataxis-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, securityLevel: "strict", theme: "default" });
+  </script>
 </head>
 <body>
   <header>
@@ -198,12 +210,16 @@
 <a href="../how-to/publicar-no-gateway.html">Publicar no gateway</a>
 <a href="../how-to/tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
 <strong>Reference</strong>
+<a href="../reference/changelog.html">Changelog</a>
 <a href="../reference/codigos-erro.html">Codigos erro</a>
 <a href="../reference/endpoints.html">Endpoints</a>
 <a href="../reference/modelo-dados.html">Modelo dados</a>
 <a href="../reference/variaveis-ambiente.html">Variaveis ambiente</a>
 <strong>Explanation</strong>
+<a href="adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
+<a href="arc42.html">Arc42</a>
 <a aria-current="page" href="arquitetura.html">Arquitetura</a>
+<a href="c4-componentes.html">Diagramas C4 componentes</a>
 <a href="decisoes-tecnicas.html">Decisoes tecnicas</a>
 <a href="governanca-apis.html">Governanca APIs</a>
 <a href="padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
@@ -222,7 +238,7 @@
 </ul>
 <h2 id="publicacao">Publicacao</h2>
 <p>O build React e publicado na raiz do GitHub Pages. A documentacao Diataxis e publicada em <code>/documentation/</code>.</p>
-      <footer>Gerado automaticamente em 08/07/2026, 18:56.</footer>
+      <footer>Gerado automaticamente em 08/07/2026, 19:04.</footer>
     </main>
   </div>
 </body>

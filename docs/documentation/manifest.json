@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T21:56:10.727Z",
+  "generatedAt": "2026-07-08T22:04:48.563Z",
   "source": "doc-as-code-diataxis",
   "categories": [
     {
@@ -51,6 +51,12 @@
       "source": "docs/how-to/tratar-erros-recorrentes.md"
     },
     {
+      "title": "Changelog",
+      "output": "reference/changelog.html",
+      "category": "reference",
+      "source": "docs/reference/changelog.md"
+    },
+    {
       "title": "Codigos erro",
       "output": "reference/codigos-erro.html",
       "category": "reference",
@@ -75,10 +81,28 @@
       "source": "docs/reference/variaveis-ambiente.md"
     },
     {
+      "title": "ADR 0001: Documentacao como codigo",
+      "output": "explanation/adr-0001-documentacao-como-codigo.html",
+      "category": "explanation",
+      "source": "docs/explanation/adr-0001-documentacao-como-codigo.md"
+    },
+    {
+      "title": "Arc42",
+      "output": "explanation/arc42.html",
+      "category": "explanation",
+      "source": "docs/explanation/arc42.md"
+    },
+    {
       "title": "Arquitetura",
       "output": "explanation/arquitetura.html",
       "category": "explanation",
       "source": "docs/explanation/arquitetura.md"
+    },
+    {
+      "title": "Diagramas C4 componentes",
+      "output": "explanation/c4-componentes.html",
+      "category": "explanation",
+      "source": "docs/explanation/c4-componentes.md"
     },
     {
       "title": "Decisoes tecnicas",

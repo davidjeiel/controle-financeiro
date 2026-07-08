@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Configurar OAuth2 - Documentacao</title>
+  <title>ADR 0001: Documentacao como codigo - Documentacao</title>
   <style>
     :root {
       color-scheme: light;
@@ -206,9 +206,9 @@
 <a href="../tutorials/criando-primeira-api.html">Criando primeira API</a>
 <a href="../tutorials/executando-projeto-localmente.html">Executando projeto localmente</a>
 <strong>How-to</strong>
-<a aria-current="page" href="configurar-oauth2.html">Configurar OAuth2</a>
-<a href="publicar-no-gateway.html">Publicar no gateway</a>
-<a href="tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
+<a href="../how-to/configurar-oauth2.html">Configurar OAuth2</a>
+<a href="../how-to/publicar-no-gateway.html">Publicar no gateway</a>
+<a href="../how-to/tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
 <strong>Reference</strong>
 <a href="../reference/changelog.html">Changelog</a>
 <a href="../reference/codigos-erro.html">Codigos erro</a>
@@ -216,30 +216,48 @@
 <a href="../reference/modelo-dados.html">Modelo dados</a>
 <a href="../reference/variaveis-ambiente.html">Variaveis ambiente</a>
 <strong>Explanation</strong>
-<a href="../explanation/adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
-<a href="../explanation/arc42.html">Arc42</a>
-<a href="../explanation/arquitetura.html">Arquitetura</a>
-<a href="../explanation/c4-componentes.html">Diagramas C4 componentes</a>
-<a href="../explanation/decisoes-tecnicas.html">Decisoes tecnicas</a>
-<a href="../explanation/governanca-apis.html">Governanca APIs</a>
-<a href="../explanation/padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
+<a aria-current="page" href="adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
+<a href="arc42.html">Arc42</a>
+<a href="arquitetura.html">Arquitetura</a>
+<a href="c4-componentes.html">Diagramas C4 componentes</a>
+<a href="decisoes-tecnicas.html">Decisoes tecnicas</a>
+<a href="governanca-apis.html">Governanca APIs</a>
+<a href="padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
     <main>
-      <h1 id="configurar-oauth2">Configurar OAuth2</h1>
-<p>Use este guia quando a aplicacao precisar autenticar chamadas em APIs protegidas por OAuth2.</p>
-<h2 id="procedimento">Procedimento</h2>
+      <h1 id="adr-0001-documentacao-como-codigo">ADR 0001: Documentacao como codigo</h1>
+<h2 id="status">Status</h2>
+<p>Aceita.</p>
+<h2 id="contexto">Contexto</h2>
+<p>O projeto precisa manter a demo da ferramenta publicada no GitHub Pages e, ao mesmo tempo, disponibilizar documentacao tecnica atualizada. A documentacao deve acompanhar a evolucao do codigo, ser revisada em pull requests e evitar dependencias operacionais desnecessarias.</p>
+<h2 id="decisao">Decisao</h2>
+<p>Manter a documentacao como arquivos Markdown no repositorio, organizada pelo framework Diataxis e gerada automaticamente por um script Node.js executado na pipeline.</p>
+<p>A publicacao fica organizada assim:</p>
 <ul>
-<li>Cadastre a aplicacao no provedor de identidade.</li>
-<li>Configure <code>client_id</code>, <code>client_secret</code>, escopos e URL de callback.</li>
-<li>Armazene segredos em variaveis protegidas do ambiente.</li>
-<li>Valide a obtencao do token antes de chamar APIs internas.</li>
+<li>Demo da aplicacao: raiz de <code>docs/</code>.</li>
+<li>Documentacao publicada: <code>docs/documentation/</code>.</li>
+<li>Fontes Markdown: <code>docs/tutorials</code>, <code>docs/how-to</code>, <code>docs/reference</code> e <code>docs/explanation</code>.</li>
 </ul>
-<h2 id="checklist">Checklist</h2>
+<h2 id="consequencias">Consequencias</h2>
+<h3 id="positivas">Positivas</h3>
 <ul>
-<li>Credenciais fora do codigo-fonte.</li>
-<li>Escopos limitados ao necessario.</li>
-<li>Renovacao de token documentada.</li>
-<li>Erros de autenticacao registrados em log.</li>
+<li>Codigo e documentacao evoluem no mesmo fluxo de revisao.</li>
+<li>Historico de mudancas fica rastreavel pelo Git.</li>
+<li>A documentacao publicada e reproduzivel localmente.</li>
+<li>A estrutura Diataxis reduz mistura entre tutoriais, guias, referencia e explicacoes.</li>
 </ul>
+<h3 id="negativas">Negativas</h3>
+<ul>
+<li>A pasta <code>docs/</code> passa a conter tanto fontes Markdown quanto artefatos publicados.</li>
+<li>A pipeline precisa manter a raiz de <code>docs/</code> com <code>index.html</code> para compatibilidade com GitHub Pages.</li>
+<li>Mudancas no gerador exigem validacao visual da documentacao publicada.</li>
+</ul>
+<h2 id="alternativas-consideradas">Alternativas consideradas</h2>
+<h3 id="usar-somente-github-wiki">Usar somente GitHub Wiki</h3>
+<p>Rejeitada porque separaria documentacao do fluxo principal de pull requests e dificultaria revisao junto com mudancas de codigo.</p>
+<h3 id="usar-ferramenta-externa-de-documentacao">Usar ferramenta externa de documentacao</h3>
+<p>Rejeitada no momento para evitar novas dependencias e manter a publicacao simples no GitHub Pages.</p>
+<h3 id="publicar-exclusivamente-por-artifact-de-github-pages">Publicar exclusivamente por artifact de GitHub Pages</h3>
+<p>Adiada porque o repositorio ja usa GitHub Pages a partir de <code>master/docs</code>; mudar a configuracao poderia interromper a demo publicada.</p>
       <footer>Gerado automaticamente em 08/07/2026, 19:04.</footer>
     </main>
   </div>

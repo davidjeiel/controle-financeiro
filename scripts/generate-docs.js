@@ -10,7 +10,7 @@ function argValue(name, fallback) {
 }
 
 const sourceDir = path.resolve(rootDir, argValue("--source", "docs"));
-const outputDir = path.resolve(rootDir, argValue("--output", "site/documentation"));
+const outputDir = path.resolve(rootDir, argValue("--output", "docs/documentation"));
 
 const categories = [
   {
@@ -70,6 +70,8 @@ function renderMarkdown(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const html = [];
   let inCode = false;
+  let codeLanguage = "";
+  let codeBuffer = [];
   let listOpen = false;
   let tableOpen = false;
   let paragraph = [];
@@ -101,16 +103,24 @@ function renderMarkdown(markdown) {
       closeList();
       closeTable();
       if (inCode) {
-        html.push("</code></pre>");
+        const code = codeBuffer.join("\n");
+        if (codeLanguage === "mermaid") {
+          html.push(`<div class="mermaid">${escapeHtml(code)}</div>`);
+        } else {
+          html.push(`<pre><code>${escapeHtml(code)}</code></pre>`);
+        }
+        codeLanguage = "";
+        codeBuffer = [];
       } else {
-        html.push("<pre><code>");
+        codeLanguage = line.trim().slice(3).trim().toLowerCase();
+        codeBuffer = [];
       }
       inCode = !inCode;
       return;
     }
 
     if (inCode) {
-      html.push(escapeHtml(line));
+      codeBuffer.push(line);
       return;
     }
 
@@ -182,7 +192,12 @@ function renderMarkdown(markdown) {
   closeTable();
 
   if (inCode) {
-    html.push("</code></pre>");
+    const code = codeBuffer.join("\n");
+    if (codeLanguage === "mermaid") {
+      html.push(`<div class="mermaid">${escapeHtml(code)}</div>`);
+    } else {
+      html.push(`<pre><code>${escapeHtml(code)}</code></pre>`);
+    }
   }
 
   return html.join("\n");
@@ -420,6 +435,14 @@ function pageTemplate({ title, body, nav, generatedAt, currentOutput }) {
       vertical-align: top;
     }
     th { background: #f1f5f9; }
+    .mermaid {
+      overflow-x: auto;
+      margin: 24px 0;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
     .diataxis-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -457,6 +480,10 @@ function pageTemplate({ title, body, nav, generatedAt, currentOutput }) {
       .diataxis-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, securityLevel: "strict", theme: "default" });
+  </script>
 </head>
 <body>
   <header>

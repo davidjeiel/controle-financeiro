@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Configurar OAuth2 - Documentacao</title>
+  <title>Diagramas C4 componentes - Documentacao</title>
   <style>
     :root {
       color-scheme: light;
@@ -206,9 +206,9 @@
 <a href="../tutorials/criando-primeira-api.html">Criando primeira API</a>
 <a href="../tutorials/executando-projeto-localmente.html">Executando projeto localmente</a>
 <strong>How-to</strong>
-<a aria-current="page" href="configurar-oauth2.html">Configurar OAuth2</a>
-<a href="publicar-no-gateway.html">Publicar no gateway</a>
-<a href="tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
+<a href="../how-to/configurar-oauth2.html">Configurar OAuth2</a>
+<a href="../how-to/publicar-no-gateway.html">Publicar no gateway</a>
+<a href="../how-to/tratar-erros-recorrentes.html">Tratar erros recorrentes</a>
 <strong>Reference</strong>
 <a href="../reference/changelog.html">Changelog</a>
 <a href="../reference/codigos-erro.html">Codigos erro</a>
@@ -216,29 +216,65 @@
 <a href="../reference/modelo-dados.html">Modelo dados</a>
 <a href="../reference/variaveis-ambiente.html">Variaveis ambiente</a>
 <strong>Explanation</strong>
-<a href="../explanation/adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
-<a href="../explanation/arc42.html">Arc42</a>
-<a href="../explanation/arquitetura.html">Arquitetura</a>
-<a href="../explanation/c4-componentes.html">Diagramas C4 componentes</a>
-<a href="../explanation/decisoes-tecnicas.html">Decisoes tecnicas</a>
-<a href="../explanation/governanca-apis.html">Governanca APIs</a>
-<a href="../explanation/padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
+<a href="adr-0001-documentacao-como-codigo.html">ADR 0001: Documentacao como codigo</a>
+<a href="arc42.html">Arc42</a>
+<a href="arquitetura.html">Arquitetura</a>
+<a aria-current="page" href="c4-componentes.html">Diagramas C4 componentes</a>
+<a href="decisoes-tecnicas.html">Decisoes tecnicas</a>
+<a href="governanca-apis.html">Governanca APIs</a>
+<a href="padrao-strangler-fig.html">Padrao Strangler Fig</a></nav>
     <main>
-      <h1 id="configurar-oauth2">Configurar OAuth2</h1>
-<p>Use este guia quando a aplicacao precisar autenticar chamadas em APIs protegidas por OAuth2.</p>
-<h2 id="procedimento">Procedimento</h2>
+      <h1 id="diagramas-c4-componentes">Diagramas C4 componentes</h1>
+<p>Esta pagina apresenta visoes C4 em Mermaid para explicar o contexto, containers e componentes principais da aplicacao.</p>
+<h2 id="nivel-1-contexto">Nivel 1: contexto</h2>
+<div class="mermaid">flowchart LR
+  User[&quot;Pessoa usuaria\ncontrola receitas e despesas&quot;]
+  System[&quot;Controle Financeiro\naplicacao web&quot;]
+  Pages[&quot;GitHub Pages\npublica demo e documentacao&quot;]
+
+  User --&gt;|&quot;usa no navegador&quot;| System
+  System --&gt;|&quot;e publicado em&quot;| Pages</div>
+<h2 id="nivel-2-containers">Nivel 2: containers</h2>
+<div class="mermaid">flowchart TB
+  subgraph Browser[&quot;Navegador&quot;]
+    ReactApp[&quot;React SPA\ninterface da ferramenta&quot;]
+    LocalState[&quot;Estado local\ntransacoes e totais&quot;]
+  end
+
+  subgraph GitHub[&quot;GitHub&quot;]
+    Repo[&quot;Repositorio\ncodigo e docs&quot;]
+    Actions[&quot;GitHub Actions\nbuild e publicacao&quot;]
+    Pages[&quot;GitHub Pages\nsite estatico&quot;]
+  end
+
+  ReactApp --&gt; LocalState
+  Repo --&gt; Actions
+  Actions --&gt; Pages
+  Pages --&gt; ReactApp</div>
+<h2 id="nivel-3-componentes">Nivel 3: componentes</h2>
+<div class="mermaid">flowchart TB
+  App[&quot;App.jsx\norquestra estado e layout&quot;]
+  Header[&quot;Header\ncabecalho&quot;]
+  Resume[&quot;Resume\nindicadores financeiros&quot;]
+  Form[&quot;Form\ncadastro de transacao&quot;]
+  Grid[&quot;Grid\nlista transacoes&quot;]
+  GridItem[&quot;GridItem\nlinha de transacao&quot;]
+  Styles[&quot;global.jsx\nestilos globais&quot;]
+
+  App --&gt; Header
+  App --&gt; Resume
+  App --&gt; Form
+  App --&gt; Grid
+  Grid --&gt; GridItem
+  App --&gt; Styles
+  Form --&gt;|&quot;adiciona transacao&quot;| App
+  GridItem --&gt;|&quot;remove transacao&quot;| App
+  App --&gt;|&quot;calcula totais&quot;| Resume</div>
+<h2 id="notas-de-leitura">Notas de leitura</h2>
 <ul>
-<li>Cadastre a aplicacao no provedor de identidade.</li>
-<li>Configure <code>client_id</code>, <code>client_secret</code>, escopos e URL de callback.</li>
-<li>Armazene segredos em variaveis protegidas do ambiente.</li>
-<li>Valide a obtencao do token antes de chamar APIs internas.</li>
-</ul>
-<h2 id="checklist">Checklist</h2>
-<ul>
-<li>Credenciais fora do codigo-fonte.</li>
-<li>Escopos limitados ao necessario.</li>
-<li>Renovacao de token documentada.</li>
-<li>Erros de autenticacao registrados em log.</li>
+<li>O nivel de contexto mostra o sistema como uma caixa unica.</li>
+<li>O nivel de containers separa navegador, repositorio, pipeline e Pages.</li>
+<li>O nivel de componentes detalha a composicao React atual.</li>
 </ul>
       <footer>Gerado automaticamente em 08/07/2026, 19:04.</footer>
     </main>
