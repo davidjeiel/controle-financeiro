@@ -37,10 +37,7 @@ jobs:
         run: npm run build
 
       - name: Preparar pasta do GitHub Pages
-        run: |
-          mkdir -p docs
-          find docs -mindepth 1 -maxdepth 1 ! -name CNAME -exec rm -rf {} +
-          cp -R build/. docs/
+        run: node scripts/prepare-pages.js
 
       - name: Gerar documentacao doc-as-code
         run: npm run docs:build
@@ -51,7 +48,7 @@ jobs:
       - name: Empacotar artefato do Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: site
 
   deploy:
     needs: build

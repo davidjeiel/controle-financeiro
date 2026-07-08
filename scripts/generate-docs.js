@@ -9,9 +9,31 @@ function argValue(name, fallback) {
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 }
 
-const sourceDir = path.resolve(rootDir, argValue("--source", "docs-src"));
-const outputDir = path.resolve(rootDir, argValue("--output", "docs/documentation"));
-const readmePath = path.resolve(rootDir, "README.md");
+const sourceDir = path.resolve(rootDir, argValue("--source", "docs"));
+const outputDir = path.resolve(rootDir, argValue("--output", "site/documentation"));
+
+const categories = [
+  {
+    key: "tutorials",
+    label: "Tutorials",
+    description: "Aprendizado guiado para quem esta comecando ou precisa completar uma jornada do inicio ao fim.",
+  },
+  {
+    key: "how-to",
+    label: "How-to",
+    description: "Guias objetivos para resolver tarefas especificas em contexto real.",
+  },
+  {
+    key: "reference",
+    label: "Reference",
+    description: "Informacao tecnica estruturada para consulta rapida e precisa.",
+  },
+  {
+    key: "explanation",
+    label: "Explanation",
+    description: "Contexto, decisoes, arquitetura e racional tecnico do projeto.",
+  },
+];
 
 const inlineRules = [
   [/\*\*(.+?)\*\*/g, "<strong>$1</strong>"],
@@ -49,6 +71,7 @@ function renderMarkdown(markdown) {
   const html = [];
   let inCode = false;
   let listOpen = false;
+  let tableOpen = false;
   let paragraph = [];
 
   function closeParagraph() {
@@ -65,10 +88,18 @@ function renderMarkdown(markdown) {
     }
   }
 
-  lines.forEach((line) => {
+  function closeTable() {
+    if (tableOpen) {
+      html.push("</tbody></table>");
+      tableOpen = false;
+    }
+  }
+
+  lines.forEach((line, index) => {
     if (line.trim().startsWith("```")) {
       closeParagraph();
       closeList();
+      closeTable();
       if (inCode) {
         html.push("</code></pre>");
       } else {
@@ -83,10 +114,41 @@ function renderMarkdown(markdown) {
       return;
     }
 
+    const cells = line.trim().startsWith("|")
+      ? line.trim().split("|").slice(1, -1).map((cell) => cell.trim())
+      : null;
+    const nextLine = lines[index + 1] || "";
+    const nextIsSeparator = /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(nextLine);
+    const isSeparator = /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+
+    if (cells && !isSeparator) {
+      closeParagraph();
+      closeList();
+      if (!tableOpen) {
+        html.push("<table>");
+        if (nextIsSeparator) {
+          html.push("<thead>");
+          html.push(`<tr>${cells.map((cell) => `<th>${renderInline(cell)}</th>`).join("")}</tr>`);
+          html.push("</thead><tbody>");
+          tableOpen = true;
+          return;
+        }
+        html.push("<tbody>");
+        tableOpen = true;
+      }
+      html.push(`<tr>${cells.map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`);
+      return;
+    }
+
+    if (isSeparator) {
+      return;
+    }
+
     const heading = line.match(/^(#{1,4})\s+(.+)$/);
     if (heading) {
       closeParagraph();
       closeList();
+      closeTable();
       const level = heading[1].length;
       const text = heading[2].trim();
       html.push(`<h${level} id="${slugify(text)}">${renderInline(text)}</h${level}>`);
@@ -96,6 +158,7 @@ function renderMarkdown(markdown) {
     const item = line.match(/^\s*(?:[-*]|\d+\.)\s+(.+)$/);
     if (item) {
       closeParagraph();
+      closeTable();
       if (!listOpen) {
         html.push("<ul>");
         listOpen = true;
@@ -107,6 +170,7 @@ function renderMarkdown(markdown) {
     if (!line.trim()) {
       closeParagraph();
       closeList();
+      closeTable();
       return;
     }
 
@@ -115,6 +179,7 @@ function renderMarkdown(markdown) {
 
   closeParagraph();
   closeList();
+  closeTable();
 
   if (inCode) {
     html.push("</code></pre>");
@@ -128,34 +193,93 @@ function titleFromMarkdown(markdown, fallback) {
   return heading ? heading[1].trim() : fallback;
 }
 
-function getMarkdownFiles() {
-  const files = [];
-
-  if (fs.existsSync(readmePath)) {
-    files.push({
-      source: readmePath,
-      name: "visao-geral.md",
-      order: 0,
-    });
+function walkMarkdownFiles(dir) {
+  if (!fs.existsSync(dir)) {
+    return [];
   }
 
-  if (fs.existsSync(sourceDir)) {
-    fs.readdirSync(sourceDir)
-      .filter((file) => file.endsWith(".md"))
-      .sort()
-      .forEach((file, index) => {
-        files.push({
-          source: path.join(sourceDir, file),
-          name: file,
-          order: index + 1,
-        });
-      });
-  }
-
-  return files;
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      return walkMarkdownFiles(fullPath);
+    }
+    return entry.isFile() && entry.name.endsWith(".md") ? [fullPath] : [];
+  });
 }
 
-function pageTemplate({ title, body, nav, generatedAt }) {
+function pageOutputPath(source) {
+  const relative = path.relative(sourceDir, source);
+  const parsed = path.parse(relative);
+  return path.join(parsed.dir, `${slugify(parsed.name)}.html`);
+}
+
+function relativeUrl(fromOutput, toOutput) {
+  const fromDir = path.dirname(fromOutput);
+  const url = path.relative(fromDir, toOutput).replace(/\\/g, "/");
+  return url || path.basename(toOutput);
+}
+
+function getMarkdownFiles() {
+  const knownCategories = new Set(categories.map((category) => category.key));
+
+  return walkMarkdownFiles(sourceDir)
+    .map((source) => {
+      const relative = path.relative(sourceDir, source).replace(/\\/g, "/");
+      const [categoryKey] = relative.split("/");
+      const category = categories.find((item) => item.key === categoryKey) || {
+        key: "other",
+        label: "Outros",
+        description: "Documentos fora da estrutura Diataxis principal.",
+      };
+
+      if (!knownCategories.has(categoryKey)) {
+        console.warn(`Aviso: ${relative} esta fora das categorias Diataxis conhecidas.`);
+      }
+
+      const markdown = fs.readFileSync(source, "utf8");
+      const output = pageOutputPath(source);
+
+      return {
+        source,
+        relative,
+        markdown,
+        title: titleFromMarkdown(markdown, path.basename(source, ".md")),
+        category,
+        output,
+      };
+    })
+    .sort((a, b) => {
+      const categoryA = categories.findIndex((category) => category.key === a.category.key);
+      const categoryB = categories.findIndex((category) => category.key === b.category.key);
+      return categoryA - categoryB || a.relative.localeCompare(b.relative);
+    });
+}
+
+function navForPage(pages, currentOutput) {
+  return categories
+    .map((category) => {
+      const links = pages
+        .filter((page) => page.category.key === category.key)
+        .map((page) => {
+          const active = page.output === currentOutput ? ' aria-current="page"' : "";
+          return `<a${active} href="${relativeUrl(currentOutput, page.output)}">${escapeHtml(page.title)}</a>`;
+        })
+        .join("\n");
+
+      if (!links) {
+        return "";
+      }
+
+      return `<strong>${category.label}</strong>\n${links}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function pageTemplate({ title, body, nav, generatedAt, currentOutput }) {
+  const demoHref = relativeUrl(currentOutput, "../index.html");
+  const homeHref = relativeUrl(currentOutput, "index.html");
+
   return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -171,6 +295,7 @@ function pageTemplate({ title, body, nav, generatedAt }) {
       --muted: #667085;
       --border: #d7dde5;
       --accent: #0f766e;
+      --accent-soft: #e7f6f3;
       --code: #111827;
     }
     * { box-sizing: border-box; }
@@ -190,7 +315,7 @@ function pageTemplate({ title, body, nav, generatedAt }) {
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      max-width: 1120px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 18px 24px;
     }
@@ -203,16 +328,21 @@ function pageTemplate({ title, body, nav, generatedAt }) {
       color: var(--muted);
       font-weight: 500;
     }
-    .demo-link {
+    .toplinks {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .toplinks a {
       color: var(--accent);
       font-weight: 700;
       text-decoration: none;
     }
     .layout {
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
+      grid-template-columns: 280px minmax(0, 1fr);
       gap: 32px;
-      max-width: 1120px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 32px 24px;
     }
@@ -227,20 +357,24 @@ function pageTemplate({ title, body, nav, generatedAt }) {
     }
     nav strong {
       display: block;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
+      margin: 18px 0 8px;
+      font-size: 0.82rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .04em;
     }
+    nav strong:first-child { margin-top: 0; }
     nav a {
       display: block;
-      padding: 8px 0;
+      padding: 7px 0;
       color: var(--text);
       text-decoration: none;
       border-top: 1px solid #edf0f3;
     }
-    nav a:first-of-type { border-top: 0; }
+    nav a[aria-current="page"] {
+      color: var(--accent);
+      font-weight: 700;
+    }
     main {
       min-width: 0;
       border: 1px solid var(--border);
@@ -273,6 +407,41 @@ function pageTemplate({ title, body, nav, generatedAt }) {
       color: inherit;
       padding: 0;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: .96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f1f5f9; }
+    .diataxis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .diataxis-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fbfcfd;
+    }
+    .diataxis-card h2 {
+      border: 0;
+      padding: 0;
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+    }
+    .diataxis-card ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
     footer {
       color: var(--muted);
       font-size: .92rem;
@@ -280,11 +449,12 @@ function pageTemplate({ title, body, nav, generatedAt }) {
       padding-top: 16px;
       border-top: 1px solid #edf0f3;
     }
-    @media (max-width: 820px) {
+    @media (max-width: 860px) {
       .topbar { align-items: flex-start; flex-direction: column; }
       .layout { grid-template-columns: 1fr; padding: 20px 16px; }
       nav { position: static; }
       main { padding: 24px 18px; }
+      .diataxis-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -293,16 +463,16 @@ function pageTemplate({ title, body, nav, generatedAt }) {
     <div class="topbar">
       <div class="brand">
         <span>Financas Pessoais</span>
-        <small>Documentacao gerada por doc-as-code</small>
+        <small>Documentacao Diataxis gerada por doc-as-code</small>
       </div>
-      <a class="demo-link" href="../index.html">Abrir demo</a>
+      <div class="toplinks">
+        <a href="${homeHref}">Inicio docs</a>
+        <a href="${demoHref}">Abrir demo</a>
+      </div>
     </div>
   </header>
   <div class="layout">
-    <nav>
-      <strong>Documentos</strong>
-      ${nav}
-    </nav>
+    <nav>${nav}</nav>
     <main>
       ${body}
       <footer>Gerado automaticamente em ${generatedAt}.</footer>
@@ -312,27 +482,35 @@ function pageTemplate({ title, body, nav, generatedAt }) {
 </html>`;
 }
 
+function indexBody(pages) {
+  const cards = categories
+    .map((category) => {
+      const links = pages
+        .filter((page) => page.category.key === category.key)
+        .map((page) => `<li><a href="${page.output.replace(/\\/g, "/")}">${escapeHtml(page.title)}</a></li>`)
+        .join("\n");
+
+      return `<section class="diataxis-card">
+  <h2>${category.label}</h2>
+  <p>${category.description}</p>
+  <ul>${links}</ul>
+</section>`;
+    })
+    .join("\n");
+
+  return `<h1>Documentacao Diataxis</h1>
+<p>Esta documentacao e organizada em quatro modos: tutorials, how-to, reference e explanation. Essa separacao ajuda leitores a encontrar aprendizado guiado, guias praticos, consulta tecnica e contexto arquitetural sem misturar objetivos diferentes.</p>
+<div class="diataxis-grid">${cards}</div>`;
+}
+
 function buildDocs() {
-  const files = getMarkdownFiles();
-  if (!files.length) {
+  const pages = getMarkdownFiles();
+  if (!pages.length) {
     throw new Error("Nenhum arquivo Markdown encontrado para gerar a documentacao.");
   }
 
   fs.rmSync(outputDir, { recursive: true, force: true });
   fs.mkdirSync(outputDir, { recursive: true });
-
-  const pages = files.map((file) => {
-    const markdown = fs.readFileSync(file.source, "utf8");
-    const title = titleFromMarkdown(markdown, path.basename(file.name, ".md"));
-    const slug = slugify(path.basename(file.name, ".md")) || `pagina-${file.order}`;
-    return {
-      ...file,
-      markdown,
-      title,
-      slug,
-      output: `${slug}.html`,
-    };
-  });
 
   const generatedAt = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -340,29 +518,48 @@ function buildDocs() {
     timeZone: "America/Sao_Paulo",
   }).format(new Date());
 
-  const nav = pages
-    .map((page) => `<a href="${page.output}">${escapeHtml(page.title)}</a>`)
-    .join("\n");
+  const indexOutput = "index.html";
+  const indexNav = navForPage(pages, indexOutput);
+  fs.writeFileSync(
+    path.join(outputDir, indexOutput),
+    pageTemplate({
+      title: "Documentacao Diataxis",
+      body: indexBody(pages),
+      nav: indexNav,
+      generatedAt,
+      currentOutput: indexOutput,
+    }),
+    "utf8"
+  );
 
   pages.forEach((page) => {
     const body = renderMarkdown(page.markdown);
+    const target = path.join(outputDir, page.output);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(
-      path.join(outputDir, page.output),
-      pageTemplate({ title: page.title, body, nav, generatedAt }),
+      target,
+      pageTemplate({
+        title: page.title,
+        body,
+        nav: navForPage(pages, page.output),
+        generatedAt,
+        currentOutput: page.output,
+      }),
       "utf8"
     );
   });
 
-  fs.copyFileSync(path.join(outputDir, pages[0].output), path.join(outputDir, "index.html"));
   fs.writeFileSync(
     path.join(outputDir, "manifest.json"),
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        source: "doc-as-code",
-        pages: pages.map(({ title, output, source }) => ({
+        source: "doc-as-code-diataxis",
+        categories: categories.map(({ key, label }) => ({ key, label })),
+        pages: pages.map(({ title, output, source, category }) => ({
           title,
-          output,
+          output: output.replace(/\\/g, "/"),
+          category: category.key,
           source: path.relative(rootDir, source).replace(/\\/g, "/"),
         })),
       },
@@ -372,7 +569,7 @@ function buildDocs() {
     "utf8"
   );
 
-  console.log(`Documentacao gerada em ${path.relative(rootDir, outputDir)} com ${pages.length} pagina(s).`);
+  console.log(`Documentacao Diataxis gerada em ${path.relative(rootDir, outputDir)} com ${pages.length} pagina(s).`);
 }
 
 buildDocs();

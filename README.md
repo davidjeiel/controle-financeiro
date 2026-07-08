@@ -57,13 +57,13 @@ npm run dev
 
 9. Abra o navegador e acesse `http://localhost:3000` para visualizar o projeto Finanças em execução localmente.
 
-## Documentacao doc-as-code
+## Documentacao doc-as-code com Diataxis
 
-A documentacao tecnica do projeto fica versionada em Markdown e e gerada automaticamente pela pipeline do GitHub Actions.
+A documentacao tecnica do projeto fica versionada em Markdown, organizada pelo framework Diataxis e gerada automaticamente pela pipeline do GitHub Actions.
 
-- Conteudo fonte: `README.md` e arquivos em `docs-src/`
+- Conteudo fonte: arquivos em `docs/tutorials`, `docs/how-to`, `docs/reference` e `docs/explanation`
 - Script gerador: `scripts/generate-docs.js`
-- Saida publicada: `docs/documentation/`
+- Saida gerada localmente: `site/documentation/`
 
 Para gerar a documentacao localmente:
 
